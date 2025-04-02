@@ -380,13 +380,7 @@ check_key() {
   msgi -ama "          [ ----- \033[1;97m 🐲 By @Kalix1 🐲\033[1;33m ----- ]"
   echo -e "\033[1;32m————————————————————————————————————————————————————"
   msgi -bar2
-  echo -ne "\033[1;96m          >>> INTRODUZCA LA KEY ABAJO <<<\n\033[1;31m        " && read Key
-  respuesta=$(curl -s --data "clave=$Key" http://155.138.245.13:81/CheckPHP/CheckKey.php)
-  # Verificar la respuesta del servidor Apache
-  if [ "$respuesta" = "clave_valida" ]; then
-    instalador_final
-  else
-    instalador_final
-  fi
+  echo -e "\033[1;32m✅ Acceso autorizado. Procediendo con la instalación...\033[0m"
+  instalador_final
 }
 check_key
