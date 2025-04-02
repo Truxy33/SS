@@ -190,7 +190,7 @@ password required pam_permit.so' >/etc/pam.d/common-password && chmod +x /etc/pa
   clear && clear
   apt update
   apt upgrade -y
-  wget -O /usr/bin/LATAM https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Instalador/LATAM &>/dev/null
+  wget -O /usr/bin/LATAM https://raw.githubusercontent.com/Truxy33/SS/refs/heads/main/LATAM &>/dev/null
   chmod +x /usr/bin/LATAM
 }
 
@@ -262,7 +262,7 @@ instalador_final() {
   tput cuu1 && tput dl1
   echo -e "     \033[1;4;32mLA KEY ES VALIDA FINALIZANDO INSTALACION \033[0;39m"
   ##-->> ACOPLANDO INSTALL EN /BIN
-  wget /root/LATAM https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Instalador/LATAM -O /usr/bin/LATAM &>/dev/null
+  wget /root/LATAM https://raw.githubusercontent.com/Truxy33/SS/refs/heads/main/LATAM -O /usr/bin/LATAM &>/dev/null
   chmod +x /usr/bin/LATAM
   ##-->> LIMPIAR BASHRC
   /bin/cp /etc/skel/.bashrc ~/
@@ -273,14 +273,6 @@ instalador_final() {
   chmod +x SCRIPT-LATAM.tar.gz >/dev/null 2>&1
   rm -rf SCRIPT-LATAM.tar.gz
   cd
-  ##-->> ADPTAR SLOGAN
-  wget -O /etc/SCRIPT-LATAM/message.txt http://155.138.245.13:81/Slogan/message.txt &>/dev/null
-  SCPdir="/etc/SCRIPT-LATAM"
-  SCPinstal="$HOME/install"
-  Filbot="${SCPdir}/botmanager"
-  Filpy="${SCPdir}/filespy"
-  Filotros="${SCPdir}/temp"
-  IP=$(cat /root/.ssh/authrized_key.reg)
   ### INSTALAR VERSION DE SCRIPT
   v1=$(curl -sSL "https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Version")
   echo "$v1" >/etc/SCRIPT-LATAM/temp/version_instalacion
@@ -383,4 +375,3 @@ check_key() {
   echo -e "\033[1;32m✅ Acceso autorizado. Procediendo con la instalación...\033[0m"
   instalador_final
 }
-check_key
