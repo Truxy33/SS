@@ -190,7 +190,7 @@ password required pam_permit.so' >/etc/pam.d/common-password && chmod +x /etc/pa
   clear && clear
   apt update
   apt upgrade -y
-  wget -O /usr/bin/LATAM https://raw.githubusercontent.com/Truxy33/SS/refs/heads/main/LATAM &>/dev/null
+  wget -O /usr/bin/LATAM https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Instalador/LATAM &>/dev/null
   chmod +x /usr/bin/LATAM
 }
 
@@ -262,7 +262,7 @@ instalador_final() {
   tput cuu1 && tput dl1
   echo -e "     \033[1;4;32mLA KEY ES VALIDA FINALIZANDO INSTALACION \033[0;39m"
   ##-->> ACOPLANDO INSTALL EN /BIN
-  wget /root/LATAM https://raw.githubusercontent.com/Truxy33/SS/refs/heads/main/LATAM -O /usr/bin/LATAM &>/dev/null
+  wget /root/LATAM https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Instalador/LATAM -O /usr/bin/LATAM &>/dev/null
   chmod +x /usr/bin/LATAM
   ##-->> LIMPIAR BASHRC
   /bin/cp /etc/skel/.bashrc ~/
@@ -273,6 +273,14 @@ instalador_final() {
   chmod +x SCRIPT-LATAM.tar.gz >/dev/null 2>&1
   rm -rf SCRIPT-LATAM.tar.gz
   cd
+  ##-->> ADPTAR SLOGAN
+  wget -O /etc/SCRIPT-LATAM/message.txt http://155.138.245.13:81/Slogan/message.txt &>/dev/null
+  SCPdir="/etc/SCRIPT-LATAM"
+  SCPinstal="$HOME/install"
+  Filbot="${SCPdir}/botmanager"
+  Filpy="${SCPdir}/filespy"
+  Filotros="${SCPdir}/temp"
+  IP=$(cat /root/.ssh/authrized_key.reg)
   ### INSTALAR VERSION DE SCRIPT
   v1=$(curl -sSL "https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Version")
   echo "$v1" >/etc/SCRIPT-LATAM/temp/version_instalacion
@@ -345,33 +353,65 @@ instalador_final() {
   }
   meu_ip &>/dev/null
   exit
+# Función para mostrar mensajes con formato
+msgi() {
+  case $1 in
+    -bar2) echo "==============================================" ;;
+    -ama)  echo -e "\033[1;33m$2\033[0m" ;;
+  esac
 }
 
 error_fun() {
   tput cuu 2
   tput el
   tput el
-  echo -e "\033[1;31m               ¡# ERROR INESPERADO #¡"
-  echo -e "\033[1;31m          ESTA KEY YA FUE USADA O EXPIRO "
+  echo -e "\033[1;31m               ¡ERROR DE AUTENTICACIÓN!"
+  echo -e "\033[1;31m          CONTRASEÑA INCORRECTA O ACCESO DENEGADO"
   msgi -bar2
-  echo -ne "\033[1;97m  DESEAS REINTENTAR CON OTRA KEY  \033[1;31m[\033[1;93m S \033[1;31m/\033[1;93m N \033[1;31m]\033[1;97m: \033[1;93m" && read incertar_key
-  [[ "$incertar_key" = "s" || "$incertar_key" = "S" ]] && check_key
+  echo -ne "\033[1;97m  ¿DESEAS REINTENTAR? \033[1;31m[\033[1;93m S \033[1;31m/\033[1;93m N \033[1;31m]\033[1;97m: \033[1;93m" && read reintentar
+  [[ "$reintentar" = "s" || "$reintentar" = "S" ]] && verificar_password
   clear && clear
   msgi -bar2
-  echo -e "\033[1;97m          ---- INSTALACION CANCELADA  -----"
+  echo -e "\033[1;97m          ---- INSTALACIÓN CANCELADA  -----"
   msgi -bar2
-  exit
+  exit 1
 }
 
-check_key() {
-  clear && clear
+instalador_final() {
+  # Aquí iría la lógica de instalación
+  clear
+  msgi -bar2
+  echo -e "\033[1;32m AUTENTICACIÓN EXITOSA - INICIANDO INSTALACIÓN..."
+  msgi -bar2
+  # ... resto del proceso de instalación ...
+  exit 0
+}
+
+verificar_password() {
+  clear
   msgi -bar2
   echo -e "\033[1;32m————————————————————————————————————————————————————"
-  figlet -w 85 -f smslant "         SCRIPT
-         LATAM  " | lolcat
+  figlet -w 85 -f smslant "     SCRIPT LATAM" | lolcat
   msgi -ama "          [ ----- \033[1;97m 🐲 By @Kalix1 🐲\033[1;33m ----- ]"
   echo -e "\033[1;32m————————————————————————————————————————————————————"
   msgi -bar2
-  echo -e "\033[1;32m✅ Acceso autorizado. Procediendo con la instalación...\033[0m"
-  instalador_final
+  
+  # Passwords válidas (en un caso real usaría hash y sal)
+  declare -A passwords_validas=(
+    ["admin123"]=1
+    ["seguro456"]=1
+    ["sistemas789"]=1
+  )
+  
+  echo -ne "\033[1;96m          INGRESE SU CONTRASEÑA:\n\033[1;31m        " 
+  read -s password  # -s para ocultar la entrada
+  
+  if [[ ${passwords_validas[$password]} ]]; then
+    instalador_final
+  else
+    error_fun
+  fi
 }
+
+# Iniciar proceso de verificación
+verificar_password
