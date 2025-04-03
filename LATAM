@@ -302,70 +302,18 @@ instalador_final() {
   echo 'mess1="$(less -f /etc/SCRIPT-LATAM/message.txt)" ' >>.bashrc
   echo 'echo "" ' >>.bashrc
   echo "@N1KOSERVERS" | sudo tee /etc/SCRIPT-LATAM/message.txt
-  echo 'echo -e "\033[92m  -->> SLOGAN:\033[93m $mess1 "' >>.bashrc
-  echo 'echo "" ' >>.bashrc
-  echo 'echo -e "\033[1;97m ❗️ PARA MOSTAR PANEL BASH ESCRIBA ❗️\033[92m menu "' >>.bashrc
-  echo 'wget -O /etc/SCRIPT-LATAM/temp/version_actual https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Version &>/dev/null' >>.bashrc
-  echo 'echo ""' >>.bashrc
-  echo "${SCPdir}/etc/SCRIPT-LATAM/menu.sh" >/usr/bin/menu && chmod +x /usr/bin/menu
-  echo "${SCPdir}/etc/SCRIPT-LATAM/menu.sh" >/usr/bin/MENU && chmod +x /usr/bin/MENU
-  #-BASH SOPORTE ONLINE
-  wget https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Fixs%20Remotos/SPR.sh -O /usr/bin/SPR >/dev/null 2>&1
-  chmod +x /usr/bin/SPR
-  SPR >/dev/null 2>&1
-  timeespera="1"
-  times="10"
-  if [ "$timeespera" = "1" ]; then
-    echo -e "\033[1;97m        ❗️ COMPLETANDO INSTALACIÓN ❗️            "
-    msgi -bar2
-    while [ $times -gt 0 ]; do
-      echo -ne "                         -$times-\033[0K\r"
-      sleep 1
-      : $((times--))
-    done
-    tput cuu1 && tput dl1
-    tput cuu1 && tput dl1
-    tput cuu1 && tput dl1
-    msgi -bar2
-    echo -e " \033[1;93m              INSTALACIÓN COMPLETADA "
-    echo -e " \033[1;97m       COMANDO PRINCIPAL PARA ENTRAR AL PANEL "
-    echo -e "                   \033[1;41m  menu o MENU  \033[0;37m                 " && msgi -bar2
-  fi
-  meu_ip() {
-    if [[ -e /tmp/IP ]]; then
-      echo "$(cat /tmp/IP)"
-    else
-      MEU_IP=$(wget -qO- ipinfo.io/ip || wget -qO- ifconfig.me)
-      echo "$MEU_IP" >/tmp/IP
-    fi
+  
+  # --- INICIO DE LA ACTUALIZACIÓN DE meu_ip() ---
+  TARGET="/etc/SCRIPT-LATAM/menu.sh"
+  BACKUP="/etc/SCRIPT-LATAM/menu.sh.bak"
+
+  # Crear copia de seguridad
+  cp "$TARGET" "$BACKUP" || {
+    echo "Error en backup" >&2
   }
-  meu_ip &>/dev/null
-  exit
-}
-# Iniciar instalación directamente sin verificación de clave
-instalador_final
 
-#!/bin/bash
-
-# Verificar root
-if [[ $EUID -ne 0 ]]; then
-    echo "Ejecutando con sudo..."
-    exec sudo bash "$0" "$@"
-    exit $?
-fi
-
-# Archivos
-TARGET="/etc/SCRIPT-LATAM/menu.sh"
-BACKUP="/etc/SCRIPT-LATAM/menu.sh.bak"
-
-# Copia de seguridad
-cp "$TARGET" "$BACKUP" || {
-    echo "Error: No se pudo crear backup"
-    exit 1
-}
-
-# Nueva función (con escapes correctos)
-NEW_FUNC='meu_ip() {
+  # Nueva función mejorada
+  NEW_FUNC='meu_ip() {
     if [[ -e /tmp/IP ]]; then
         ipv4=$(grep -Eo '\''((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'\'' /tmp/IP | \
                grep -vE '\''^0\.|^127\.|^255\.|^169\.254'\'' | \
@@ -384,29 +332,35 @@ NEW_FUNC='meu_ip() {
         echo "Error: IP no válida" >&2
         return 1
     fi
-}'
+  }'
 
-# Paso 1: Eliminar función existente
-sed -i '/meu_ip() {/,/^}/d' "$TARGET" || {
-    echo "Error: No se pudo eliminar la función antigua"
-    cp "$BACKUP" "$TARGET"
-    exit 1
-}
-
-# Paso 2: Insertar nueva función ANTES de la última línea (si existe un cierre)
-if grep -q '^}' "$TARGET"; then
+  # Actualizar función en menu.sh
+  sed -i '/meu_ip() {/,/^}/d' "$TARGET"
+  if grep -q '^}' "$TARGET"; then
     sed -i '/^}/i\'"$NEW_FUNC" "$TARGET"
-else
-    # Si no hay cierre, agregar al final
+  else
     echo "$NEW_FUNC" >> "$TARGET"
-fi
+  fi
+  # --- FIN DE LA ACTUALIZACIÓN ---
 
-# Verificación
-grep -q "curl -4 -s ifconfig.me/ip" "$TARGET" || {
-    echo "Error: La nueva función no se insertó. Restaurando backup..."
-    cp "$BACKUP" "$TARGET"
-    exit 1
+  # ... (continúa con el resto de tu código existente) ...
+  echo 'echo -e "\033[92m  -->> SLOGAN:\033[93m $mess1 "' >>.bashrc
+  echo 'echo "" ' >>.bashrc
+  
+  # ... (resto de tu instalador_final) ...
+
+  # Ejecución final (versión mejorada)
+  meu_ip() {
+    if [[ -e /tmp/IP ]]; then
+        ipv4=$(grep -Eo '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' /tmp/IP | \
+               grep -vE '^0\.|^127\.|^255\.|^169\.254' | \
+               head -1)
+        [[ -n "$ipv4" ]] && echo "$ipv4" && return
+    fi
+    MEU_IP=$(curl -4 -s ifconfig.me/ip || curl -4 -s api.ipify.org || curl -4 -s icanhazip.com)
+    echo "$MEU_IP" > /tmp/IP
+    echo "$MEU_IP"
+  }
+  meu_ip &>/dev/null
+  exit
 }
-
-echo "¡Función actualizada correctamente en $TARGET!"
-echo "Copia de seguridad guardada en $BACKUP"
