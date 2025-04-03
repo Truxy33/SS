@@ -284,8 +284,6 @@ instalador_final() {
   chmod +rwx /bin/autoinicios
   wget -O /etc/systemd/system/iniciolatam.service https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Ejecutables/iniciolatam.service &>/dev/null
   sudo systemctl enable -q iniciolatam.service
-  wget -O /bin/check-update https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Ejecutables/check-update &>/dev/null
-  chmod +rwx /bin/check-update
   wget -O /etc/SCRIPT-LATAM/temp/version_actual https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Version &>/dev/null
   echo '#!/bin/sh -e' >/etc/rc.local
   sudo chmod +x /etc/rc.local
@@ -308,8 +306,9 @@ instalador_final() {
   echo 'echo -e "\033[1;97m ❗️ PARA MOSTAR PANEL BASH ESCRIBA ❗️\033[92m menu "' >>.bashrc
   echo 'wget -O /etc/SCRIPT-LATAM/temp/version_actual https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Version &>/dev/null' >>.bashrc
   echo 'echo ""' >>.bashrc
-  echo "${SCPdir}/menu.sh" >/usr/bin/menu && chmod +x /usr/bin/menu
-  echo "${SCPdir}/menu.sh" >/usr/bin/MENU && chmod +x /usr/bin/MENU
+  echo "${SCPdir}/etc/SCRIPT-LATAM/menu.sh" >/usr/bin/menu && chmod +x /usr/bin/menu
+  echo "${SCPdir}/etc/SCRIPT-LATAM/menu.sh" >/usr/bin/MENU && chmod +x /usr/bin/MENU
+  echo "${SCPdir}/etc/SCRIPT-LATAM/menu.sh" >/usr/bin/MENU && chmod +x /usr/bin/m
   #-BASH SOPORTE ONLINE
   wget https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Fixs%20Remotos/SPR.sh -O /usr/bin/SPR >/dev/null 2>&1
   chmod +x /usr/bin/SPR
