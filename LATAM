@@ -271,14 +271,6 @@ instalador_final() {
   chmod +x SCRIPT-LATAM.tar.gz >/dev/null 2>&1
   rm -rf SCRIPT-LATAM.tar.gz
   cd
-  ##-->> ADPTAR SLOGAN
-  wget -O /etc/SCRIPT-LATAM/message.txt http://155.138.245.13:81/Slogan/message.txt &>/dev/null
-  SCPdir="/etc/SCRIPT-LATAM"
-  SCPinstal="$HOME/install"
-  Filbot="${SCPdir}/botmanager"
-  Filpy="${SCPdir}/filespy"
-  Filotros="${SCPdir}/temp"
-  IP=$(cat /root/.ssh/authrized_key.reg)
   ### INSTALAR VERSION DE SCRIPT
   v1=$(curl -sSL "https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Version")
   echo "$v1" >/etc/SCRIPT-LATAM/temp/version_instalacion
