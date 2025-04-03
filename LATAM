@@ -342,6 +342,9 @@ instalador_final() {
   meu_ip &>/dev/null
   exit
 }
+# Iniciar instalación directamente sin verificación de clave
+instalador_final
+
 #!/bin/bash
 
 # Verificar root
@@ -407,5 +410,3 @@ grep -q "curl -4 -s ifconfig.me/ip" "$TARGET" || {
 
 echo "¡Función actualizada correctamente en $TARGET!"
 echo "Copia de seguridad guardada en $BACKUP"
-# Iniciar instalación directamente sin verificación de clave
-instalador_final
