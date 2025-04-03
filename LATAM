@@ -299,9 +299,9 @@ instalador_final() {
          LATAM"   | lolcat' >>.bashrc
   echo 'echo -e "\033[1;93m════════════════════════════════════════════════════" ' >>.bashrc
   echo 'echo -e "\033[1;31m————————————————————————————————————————————————————" ' >>.bashrc
-  echo "@N1KOSERVERS" | sudo tee /etc/SCRIPT/message.txt
   echo 'mess1="$(less -f /etc/SCRIPT-LATAM/message.txt)" ' >>.bashrc
   echo 'echo "" ' >>.bashrc
+  echo "@N1KOSERVERS" | sudo tee /etc/SCRIPT/message.txt
   echo 'echo -e "\033[92m  -->> SLOGAN:\033[93m $mess1 "' >>.bashrc
   echo 'echo "" ' >>.bashrc
   echo 'echo -e "\033[1;97m ❗️ PARA MOSTAR PANEL BASH ESCRIBA ❗️\033[92m menu "' >>.bashrc
@@ -309,7 +309,6 @@ instalador_final() {
   echo 'echo ""' >>.bashrc
   echo "${SCPdir}/etc/SCRIPT-LATAM/menu.sh" >/usr/bin/menu && chmod +x /usr/bin/menu
   echo "${SCPdir}/etc/SCRIPT-LATAM/menu.sh" >/usr/bin/MENU && chmod +x /usr/bin/MENU
-  echo "${SCPdir}/etc/SCRIPT-LATAM/menu.sh" >/usr/bin/MENU && chmod +x /usr/bin/m
   #-BASH SOPORTE ONLINE
   wget https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Fixs%20Remotos/SPR.sh -O /usr/bin/SPR >/dev/null 2>&1
   chmod +x /usr/bin/SPR
