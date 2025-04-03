@@ -331,39 +331,10 @@ instalador_final() {
     echo -e " \033[1;97m       COMANDO PRINCIPAL PARA ENTRAR AL PANEL "
     echo -e "                   \033[1;41m  menu o MENU  \033[0;37m                 " && msgi -bar2
   fi
-  meu_ip() {
+ meu_ip() {
     if [[ -e /tmp/IP ]]; then
-      echo "$(cat /tmp/IP)"
-    else
-      MEU_IP=$(wget -qO- ipinfo.io/ip || wget -qO- ifconfig.me)
-      echo "$MEU_IP" >/tmp/IP
-    fi
-  }
-  meu_ip &>/dev/null
-}
-actualizar_meu_ip() {
-    # Verificar root
-    if [[ $EUID -ne 0 ]]; then
-        echo "Ejecutando con sudo..."
-        exec sudo bash "$0" "$@"
-        exit $?
-    fi
-
-    # Archivos
-    local TARGET="/etc/SCRIPT-LATAM/menu.sh"
-    local BACKUP="/etc/SCRIPT-LATAM/menu.sh.bak"
-
-    # Copia de seguridad
-    cp "$TARGET" "$BACKUP" || {
-        echo "Error: No se pudo crear copia de seguridad" >&2
-        return 1
-    }
-
-    # Nueva función mejorada
-    local NEW_FUNC='meu_ip() {
-    if [[ -e /tmp/IP ]]; then
-        ipv4=$(grep -Eo '\''((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'\'' /tmp/IP | \
-               grep -vE '\''^0\.|^127\.|^255\.|^169\.254'\'' | \
+        ipv4=$(grep -Eo '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' /tmp/IP | \
+               grep -vE '^0\.|^127\.|^255\.|^169\.254' | \
                head -1)
         
         if [[ -n "$ipv4" ]]; then
@@ -373,7 +344,7 @@ actualizar_meu_ip() {
     fi
 
     # Obtención de nueva IP
-    MEU_IP=$(curl -4 -s ifconfig.me/ip || curl -4 -s api.ipify.org || curl -4 -s icanhazip.com)
+    MEU_IP=$(curl -4 -s ifconfig.me/ip  curl -4 -s api.ipify.org  curl -4 -s icanhazip.com)
     
     # Validación final
     if [[ $MEU_IP =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$ ]] && \
@@ -384,32 +355,10 @@ actualizar_meu_ip() {
         echo "Error: No se pudo obtener una IPv4 válida" >&2
         return 1
     fi
-}'
-
-    # Eliminar función existente
-    sed -i '/meu_ip() {/,/^}/d' "$TARGET" || {
-        echo "Error: No se pudo eliminar la función antigua" >&2
-        cp "$BACKUP" "$TARGET"
-        return 1
-    }
-
-    # Insertar nueva función
-    if grep -q '^}' "$TARGET"; then
-        # Insertar antes del último cierre }
-        sed -i '/^}/i\'"$NEW_FUNC" "$TARGET"
-    else
-        # Añadir al final si no hay cierre claro
-        echo "$NEW_FUNC" >> "$TARGET"
-    fi
-
-    # Verificación
-    if grep -q "curl -4 -s ifconfig.me/ip" "$TARGET"; then
-        echo "¡Función actualizada correctamente en $TARGET!"
-        echo "Copia de seguridad guardada en $BACKUP"
-        return 0
-    else
-        echo "Error: La nueva función no se insertó correctamente. Restaurando backup..." >&2
-        cp "$BACKUP" "$TARGET"
-        return 1
-    fi
 }
+  meu_ip &>/dev/null
+  exit
+}
+
+# Iniciar instalación directamente sin verificación de clave
+instalador_final
