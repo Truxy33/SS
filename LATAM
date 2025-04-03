@@ -333,15 +333,92 @@ instalador_final() {
   fi
   meu_ip() {
     if [[ -e /tmp/IP ]]; then
-      echo "$(cat /tmp/IP)"
-    else
-      MEU_IP=$(wget -qO- ipinfo.io/ip || wget -qO- ifconfig.me)
-      echo "$MEU_IP" >/tmp/IP
+        ipv4=$(grep -Eo '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' /tmp/IP | \
+               grep -vE '^0\.|^127\.|^255\.|^169\.254' | \
+               head -1)
+        
+        if [[ -n "$ipv4" ]]; then
+            echo "$ipv4"
+            return
+        fi
     fi
-  }
-  meu_ip &>/dev/null
-  exit
+
+    # Obtención de nueva IP
+    MEU_IP=$(curl -4 -s ifconfig.me/ip || curl -4 -s api.ipify.org || curl -4 -s icanhazip.com)
+    
+    # Validación final
+    if [[ $MEU_IP =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$ ]] && \
+       [[ ! $MEU_IP =~ ^(0|127|255|169\.254) ]]; then
+        echo "$MEU_IP" > /tmp/IP
+        echo "$MEU_IP"
+    else
+        echo "Error: No se pudo obtener una IPv4 válida" >&2
+        return 1
+    fi
+}
+actualizar_meu_ip() {
+# Verificar root
+if [[ $EUID -ne 0 ]]; then
+    echo "Ejecutando con sudo..."
+    exec sudo bash "$0" "$@"
+    exit $?
+fi
+
+# Archivos
+TARGET="/etc/SCRIPT-LATAM/menu.sh"
+BACKUP="/etc/SCRIPT-LATAM/menu.sh.bak"
+
+# Copia de seguridad
+cp "$TARGET" "$BACKUP" || {
+    echo "Error: No se pudo crear backup"
+    exit 1
 }
 
-# Iniciar instalación directamente sin verificación de clave
-instalador_final
+# Nueva función (con escapes correctos)
+NEW_FUNC='meu_ip() {
+    if [[ -e /tmp/IP ]]; then
+        ipv4=$(grep -Eo '\''((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'\'' /tmp/IP | \
+               grep -vE '\''^0\.|^127\.|^255\.|^169\.254'\'' | \
+               head -1)
+        
+        [[ -n "$ipv4" ]] && echo "$ipv4" && return
+    fi
+
+    MEU_IP=$(curl -4 -s ifconfig.me/ip || curl -4 -s api.ipify.org || curl -4 -s icanhazip.com)
+    
+    if [[ $MEU_IP =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$ ]] && \
+       [[ ! $MEU_IP =~ ^(0|127|255|169\.254) ]]; then
+        echo "$MEU_IP" > /tmp/IP
+        echo "$MEU_IP"
+    else
+        echo "Error: IP no válida" >&2
+        return 1
+    fi
+}'
+
+# Paso 1: Eliminar función existente
+sed -i '/meu_ip() {/,/^}/d' "$TARGET" || {
+    echo "Error: No se pudo eliminar la función antigua"
+    cp "$BACKUP" "$TARGET"
+    exit 1
+}
+
+# Paso 2: Insertar nueva función ANTES de la última línea (si existe un cierre)
+if grep -q '^}' "$TARGET"; then
+    sed -i '/^}/i\'"$NEW_FUNC" "$TARGET"
+else
+    # Si no hay cierre, agregar al final
+    echo "$NEW_FUNC" >> "$TARGET"
+fi
+
+# Verificación
+grep -q "curl -4 -s ifconfig.me/ip" "$TARGET" || {
+    echo "Error: La nueva función no se insertó. Restaurando backup..."
+    cp "$BACKUP" "$TARGET"
+    exit 1
+}
+
+echo "¡Función actualizada correctamente en $TARGET!"
+    echo "Copia de seguridad guardada en $BACKUP"
+}
+
