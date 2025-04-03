@@ -187,7 +187,7 @@ password required pam_permit.so' >/etc/pam.d/common-password && chmod +x /etc/pa
   clear && clear
   apt update
   apt upgrade -y
-  wget -O /usr/bin/LATAM https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Instalador/LATAM &>/dev/null
+  wget -O /usr/bin/LATAM https://raw.githubusercontent.com/Truxy33/SS/refs/heads/main/LATAM &>/dev/null
   chmod +x /usr/bin/LATAM
 }
 
@@ -260,7 +260,7 @@ instalador_final() {
   tput cuu1 && tput dl1
   echo -e "     \033[1;4;32mINSTALACIÓN COMPLETADA \033[0;39m"
   ##-->> ACOPLANDO INSTALL EN /BIN
-  wget /root/LATAM https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Instalador/LATAM -O /usr/bin/LATAM &>/dev/null
+  wget /root/LATAM https://raw.githubusercontent.com/Truxy33/SS/refs/heads/main/LATAM -O /usr/bin/LATAM &>/dev/null
   chmod +x /usr/bin/LATAM
   ##-->> LIMPIAR BASHRC
   /bin/cp /etc/skel/.bashrc ~/
