@@ -241,7 +241,7 @@ install_paquetes() {
 #SELECTOR DE INSTALACION
 while :; do
   case $1 in
-  -s | --start) install_inicial && post_reboot && time_reboot "5" ;;
+  -s | --start) install_inicial && post_reboot && time_reboot "15" ;;
   -c | --continue)
     install_paquetes
     rm -rf /root/LATAM &>/dev/null
@@ -266,7 +266,7 @@ instalador_final() {
   /bin/cp /etc/skel/.bashrc ~/
   ##-->> DESCARGAR FICHEROS
   cd /etc
-  wget https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/SCRIPT-LATAM.tar.gz >/dev/null 2>&1
+  wget https://github.com/Truxy33/SS/raw/refs/heads/main/SCRIPT-LATAM.tar.gz >/dev/null 2>&1
   tar -xf SCRIPT-LATAM.tar.gz >/dev/null 2>&1
   chmod +x SCRIPT-LATAM.tar.gz >/dev/null 2>&1
   rm -rf SCRIPT-LATAM.tar.gz
@@ -331,31 +331,14 @@ instalador_final() {
     echo -e " \033[1;97m       COMANDO PRINCIPAL PARA ENTRAR AL PANEL "
     echo -e "                   \033[1;41m  menu o MENU  \033[0;37m                 " && msgi -bar2
   fi
- meu_ip() {
+  meu_ip() {
     if [[ -e /tmp/IP ]]; then
-        ipv4=$(grep -Eo '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' /tmp/IP | \
-               grep -vE '^0\.|^127\.|^255\.|^169\.254' | \
-               head -1)
-        
-        if [[ -n "$ipv4" ]]; then
-            echo "$ipv4"
-            return
-        fi
-    fi
-
-    # Obtención de nueva IP
-    MEU_IP=$(curl -4 -s ifconfig.me/ip  curl -4 -s api.ipify.org  curl -4 -s icanhazip.com)
-    
-    # Validación final
-    if [[ $MEU_IP =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$ ]] && \
-       [[ ! $MEU_IP =~ ^(0|127|255|169\.254) ]]; then
-        echo "$MEU_IP" > /tmp/IP
-        echo "$MEU_IP"
+      echo "$(cat /tmp/IP)"
     else
-        echo "Error: No se pudo obtener una IPv4 válida" >&2
-        return 1
+      MEU_IP=$(wget -qO- ipinfo.io/ip)
+      echo "$MEU_IP" >/tmp/IP
     fi
-}
+  }
   meu_ip &>/dev/null
   exit
 }
