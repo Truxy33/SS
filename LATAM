@@ -160,7 +160,6 @@ password required pam_permit.so' >/etc/pam.d/common-password && chmod +x /etc/pa
     echo -e "\033[1;97m ESTA ES TU IP PUBLICA? \033[32m$TUIP"
     msgi -bar2
     echo -ne "\033[1;97m Seleccione  \033[1;31m[\033[1;93m S \033[1;31m/\033[1;93m N \033[1;31m]\033[1;97m: \033[1;93m" && read tu_ip
-    #read -p " Seleccione [ S / N ]: " tu_ip
     [[ "$tu_ip" = "n" || "$tu_ip" = "N" ]] && tu_ip
   }
   fun_ip
@@ -171,7 +170,6 @@ password required pam_permit.so' >/etc/pam.d/common-password && chmod +x /etc/pa
   echo -e "\033[1;97m CAMBIAR PASS ROOT? \033[32m"
   msgi -bar2
   echo -ne "\033[1;97m Seleccione  \033[1;31m[\033[1;93m S \033[1;31m/\033[1;93m N \033[1;31m]\033[1;97m: \033[1;93m" && read pass_root
-  #read -p " Seleccione [ S / N ]: " tu_ip
   [[ "$pass_root" = "s" || "$pass_root" = "S" ]] && pass_root
   for i in {1..6}; do tput cuu 1 && tput el; done
   msgi -bar2
@@ -180,7 +178,6 @@ password required pam_permit.so' >/etc/pam.d/common-password && chmod +x /etc/pa
   echo -e "\033[1;97m AGREGAR REGISTRO DE NOTYFY? \033[32m"
   msgi -bar2
   echo -ne "\033[1;97m Seleccione  \033[1;31m[\033[1;93m S \033[1;31m/\033[1;93m N \033[1;31m]\033[1;97m: \033[1;93m" && read avi_login
-  #read -p " Seleccione [ S / N ]: " tu_ip
   [[ "$avi_login" = "s" || "$avi_login" = "S" ]] && avi_login
   for i in {1..6}; do tput cuu 1 && tput el; done
   msgi -bar2
@@ -240,6 +237,7 @@ install_paquetes() {
   msgi -bar2
   read -t 30 -n 1 -rsp $'\033[1;97m           Preciona Enter Para continuar\n'
 }
+
 #SELECTOR DE INSTALACION
 while :; do
   case $1 in
@@ -260,7 +258,7 @@ done
 instalador_final() {
   tput cuu1 && tput dl1
   tput cuu1 && tput dl1
-  echo -e "     \033[1;4;32mLA KEY ES VALIDA FINALIZANDO INSTALACION \033[0;39m"
+  echo -e "     \033[1;4;32mINSTALACIÓN COMPLETADA \033[0;39m"
   ##-->> ACOPLANDO INSTALL EN /BIN
   wget /root/LATAM https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Instalador/LATAM -O /usr/bin/LATAM &>/dev/null
   chmod +x /usr/bin/LATAM
@@ -297,11 +295,11 @@ instalador_final() {
   wget -O /bin/check-update https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Ejecutables/check-update &>/dev/null
   chmod +rwx /bin/check-update
   wget -O /etc/SCRIPT-LATAM/temp/version_actual https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Version &>/dev/null
-   echo '#!/bin/sh -e' >/etc/rc.local
-    sudo chmod +x /etc/rc.local
-    echo "sudo rebootnb reboot" >>/etc/rc.local
-    echo "sleep 2s" >>/etc/rc.local
-    echo "exit 0" >>/etc/rc.local
+  echo '#!/bin/sh -e' >/etc/rc.local
+  sudo chmod +x /etc/rc.local
+  echo "sudo rebootnb reboot" >>/etc/rc.local
+  echo "sleep 2s" >>/etc/rc.local
+  echo "exit 0" >>/etc/rc.local
   msgi -bar2
   echo 'clear && clear' >>.bashrc
   echo 'rebootnb login >/dev/null 2>&1' >>.bashrc
@@ -320,7 +318,6 @@ instalador_final() {
   echo 'echo ""' >>.bashrc
   echo "${SCPdir}/menu.sh" >/usr/bin/menu && chmod +x /usr/bin/menu
   echo "${SCPdir}/menu.sh" >/usr/bin/MENU && chmod +x /usr/bin/MENU
-  echo "$Key" >${SCPdir}/key.txt
   #-BASH SOPORTE ONLINE
   wget https://raw.githubusercontent.com/NetVPS/LATAM_Oficial/main/Fixs%20Remotos/SPR.sh -O /usr/bin/SPR >/dev/null 2>&1
   chmod +x /usr/bin/SPR
@@ -328,7 +325,7 @@ instalador_final() {
   timeespera="1"
   times="10"
   if [ "$timeespera" = "1" ]; then
-    echo -e "\033[1;97m        ❗️ REGISTRANDO IP y KEY EN LA BASE ❗️            "
+    echo -e "\033[1;97m        ❗️ COMPLETANDO INSTALACIÓN ❗️            "
     msgi -bar2
     while [ $times -gt 0 ]; do
       echo -ne "                         -$times-\033[0K\r"
@@ -339,7 +336,7 @@ instalador_final() {
     tput cuu1 && tput dl1
     tput cuu1 && tput dl1
     msgi -bar2
-    echo -e " \033[1;93m              LISTO REGISTRO COMPLETO "
+    echo -e " \033[1;93m              INSTALACIÓN COMPLETADA "
     echo -e " \033[1;97m       COMANDO PRINCIPAL PARA ENTRAR AL PANEL "
     echo -e "                   \033[1;41m  menu o MENU  \033[0;37m                 " && msgi -bar2
   fi
@@ -353,65 +350,7 @@ instalador_final() {
   }
   meu_ip &>/dev/null
   exit
-# Función para mostrar mensajes con formato
-msgi() {
-  case $1 in
-    -bar2) echo "==============================================" ;;
-    -ama)  echo -e "\033[1;33m$2\033[0m" ;;
-  esac
 }
 
-error_fun() {
-  tput cuu 2
-  tput el
-  tput el
-  echo -e "\033[1;31m               ¡ERROR DE AUTENTICACIÓN!"
-  echo -e "\033[1;31m          CONTRASEÑA INCORRECTA O ACCESO DENEGADO"
-  msgi -bar2
-  echo -ne "\033[1;97m  ¿DESEAS REINTENTAR? \033[1;31m[\033[1;93m S \033[1;31m/\033[1;93m N \033[1;31m]\033[1;97m: \033[1;93m" && read reintentar
-  [[ "$reintentar" = "s" || "$reintentar" = "S" ]] && verificar_password
-  clear && clear
-  msgi -bar2
-  echo -e "\033[1;97m          ---- INSTALACIÓN CANCELADA  -----"
-  msgi -bar2
-  exit 1
-}
-
-instalador_final() {
-  # Aquí iría la lógica de instalación
-  clear
-  msgi -bar2
-  echo -e "\033[1;32m AUTENTICACIÓN EXITOSA - INICIANDO INSTALACIÓN..."
-  msgi -bar2
-  # ... resto del proceso de instalación ...
-  exit 0
-}
-
-verificar_password() {
-  clear
-  msgi -bar2
-  echo -e "\033[1;32m————————————————————————————————————————————————————"
-  figlet -w 85 -f smslant "     SCRIPT LATAM" | lolcat
-  msgi -ama "          [ ----- \033[1;97m 🐲 By @Kalix1 🐲\033[1;33m ----- ]"
-  echo -e "\033[1;32m————————————————————————————————————————————————————"
-  msgi -bar2
-  
-  # Passwords válidas (en un caso real usaría hash y sal)
-  declare -A passwords_validas=(
-    ["admin123"]=1
-    ["seguro456"]=1
-    ["sistemas789"]=1
-  )
-  
-  echo -ne "\033[1;96m          INGRESE SU CONTRASEÑA:\n\033[1;31m        " 
-  read -s password  # -s para ocultar la entrada
-  
-  if [[ ${passwords_validas[$password]} ]]; then
-    instalador_final
-  else
-    error_fun
-  fi
-}
-
-# Iniciar proceso de verificación
-verificar_password
+# Iniciar instalación directamente sin verificación de clave
+instalador_final
