@@ -266,7 +266,7 @@ instalador_final() {
   /bin/cp /etc/skel/.bashrc ~/
   ##-->> DESCARGAR FICHEROS
   cd /etc
-  wget https://github.com/Truxy33/SS/raw/refs/heads/main/SCRIPT-LATAM.tar.gz >/dev/null 2>&1
+  wget https://raw.githubusercontent.com/Truxy33/SS/main/SCRIPT-LATAM.tar.gz >/dev/null 2>&1
   tar -xf SCRIPT-LATAM.tar.gz >/dev/null 2>&1
   chmod +x SCRIPT-LATAM.tar.gz >/dev/null 2>&1
   rm -rf SCRIPT-LATAM.tar.gz
